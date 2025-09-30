@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>THE THIRD EYE</title>
+    <style>
+        /* Keyframe animations */
+        @keyframes blink-animation {
+            0% { background-color: #ff4500; transform: scale(1); }
+            50% { background-color: #007acc; transform: scale(1.05); }
+            100% { background-color: #ff4500; transform: scale(1); }
+        }
+        @keyframes logo-glow {
+            0%, 100% { text-shadow: 0 0 5px #00bcd4, 0 0 10px #00bcd4; }
+            50% { text-shadow: 0 0 10px #4dc9b0, 0 0 20px #4dc9b0, 0 0 30px #4dc9b0; }
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modern font */
+            text-align: center; 
+            background-color: #1a1a2e; /* Darker, richer background */
+            color: #e0e0e0; 
+            margin: 0; 
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        /* --- NEW: Logo Styling --- */
+        #logo {
+            font-family: 'Orbitron', sans-serif; /* Sci-fi font if loaded, fallback otherwise */
+            font-size: 3.5em; /* Larger size */
+            font-weight: bold;
+            color: #e0e0e0; /* Default color */
+            letter-spacing: 3px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            animation: logo-glow 3s infinite alternate; /* Apply glowing animation */
+            cursor: default; /* Not clickable */
+        }
+        #logo span {
+            color: #00bcd4; /* Highlight for "EYE" */
+        }
+
+        #subtitle {
+            font-size: 1.2em;
+            color: #8c8c8c;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+
+        #video-container { 
+            display: inline-block; 
+            padding: 8px; /* Slightly thicker border */
+            border-radius: 18px; /* More rounded corners */
+            background: linear-gradient(90deg, #ff5252, #00bcd4, #ffeb3b, #ff5252); /* Gradient border */
+            background-size: 400% 400%;
+            animation: gradient-animation 15s ease infinite; /* Slow gradient animation */
+            box-shadow: 0 0 15px rgba(0, 188, 212, 0.4); /* Soft initial glow */
+            transition: box-shadow 0.3s ease-in-out;
+        }
+        @keyframes gradient-animation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        #video-container:hover {
+            box-shadow: 0 0 30px rgba(0, 188, 212, 0.9); /* Stronger glow on hover */
+            animation-duration: 5s; /* Faster animation on hover */
+        }
+
+        #video-feed { 
+            border: none; 
+            border-radius: 12px; /* Inner rounded corners */
+            display: block; 
+            background-color: #000;
+        }
+
+        #announcement-text { 
+            margin-top: 25px; 
+            height: 40px; /* Slightly taller for more text */
+            font-size: 1.6em;
+            color: #ff5252; 
+            font-weight: bold;
+            background-color: #2a2a4a; /* Darker background for text */
+            padding: 10px 15px;
+            border-radius: 8px;
+            display: inline-block; /* To make padding work */
+            box-shadow: 0 0 10px rgba(255, 82, 82, 0.3);
+            min-width: 60%;
+        }
+
+        #mute-btn { 
+            margin-top: 20px; 
+            padding: 15px 30px; 
+            font-size: 18px; 
+            cursor: pointer; 
+            background-color: #00bcd4; /* Brighter button */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 10px rgba(0, 188, 212, 0.4);
+        }
+        #mute-btn:hover {
+            background-color: #0097a7;
+            transform: translateY(-2px);
+        }
+
+        #controls {
+            display: flex;
+            justify-content: space-between;
+            width: 80%; /* Wider buttons */
+            margin: 30px auto;
+        }
+        .direction-btn { 
+            padding: 20px 40px; /* Larger buttons */
+            font-size: 24px; /* Larger text */
+            font-weight: bold;
+            border: 3px solid #66bb6a; /* Greenish border */
+            border-radius: 15px;
+            background-color: #388e3c; /* Darker green */
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            min-width: 45%; /* Ensure they take up space */
+        }
+        .direction-btn:hover {
+            background-color: #2e7d32;
+            border-color: #a5d6a7;
+        }
+        .blinking {
+            animation: blink-animation 1s infinite alternate; /* Changed to alternate */
+            border-color: #ffeb3b !important; /* Yellow border for blinking */
+            background-color: #ff9800 !important; /* Orange background for blinking */
+            box-shadow: 0 0 20px #ffeb3b !important; /* Yellow glow */
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div id="logo">THE THIRD <span>EYE</span></div>
+        <p id="subtitle">Your Vision, Enhanced.</p>
+
+        <div id="video-container">
+            <img id="video-feed" src="{{ url_for('video_feed') }}" width="640" height="480">
+        </div>
+        
+        <h2 id="announcement-text">Click 'Start Audio' to enable voice</h2>
+        <button id="mute-btn">Start Audio</button>
+        
+        <div id="controls">
+            <button id="left-btn" class="direction-btn">◀ LEFT</button>
+            <button id="right-btn" class="direction-btn">RIGHT ▶</button>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        const socket = io.connect('http://' + document.domain + ':' + location.port);
+        const muteButton = document.getElementById('mute-btn');
+        const announcementElement = document.getElementById('announcement-text');
+        const leftButton = document.getElementById('left-btn');
+        const rightButton = document.getElementById('right-btn');
+        let isMuted = true;
+
+        function speak(text) {
+            if (isMuted) return;
+            speechSynthesis.cancel(); 
+            const utterance = new SpeechSynthesisUtterance(text);
+            speechSynthesis.speak(utterance);
+        }
+        
+        muteButton.onclick = function() {
+            isMuted = !isMuted;
+            muteButton.textContent = isMuted ? 'Unmute' : 'Mute';
+            if (!isMuted) {
+                announcementElement.innerHTML = "Audio enabled. Waiting for detection...";
+                speak("Audio enabled"); 
+            } else {
+                speechSynthesis.cancel();
+                announcementElement.innerHTML = "Audio is muted.";
+            }
+        };
+
+        socket.on('announcement', function(msg) {
+            const announcement = msg.data;
+            announcementElement.innerHTML = announcement;
+            speak(announcement);
+
+            const lowerCaseAnnouncement = announcement.toLowerCase();
+            leftButton.classList.remove('blinking');
+            rightButton.classList.remove('blinking');
+
+            if (lowerCaseAnnouncement.includes("left")) {
+                leftButton.classList.add('blinking');
+            } else if (lowerCaseAnnouncement.includes("right")) {
+                rightButton.classList.add('blinking');
+            }
+        });
+    </script>
+</body>
+</html>.\venv\Scripts\activate
